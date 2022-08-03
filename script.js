@@ -167,7 +167,7 @@
         g_ajaxTimeoutIds = [], // 通信を行う遅延された関数のsetTimeoutのidを格納する配列
         h = $("<div>").appendTo("body").append($("<h1>").text($("title").text())),
         area = {};
-    ["Setting", "Checker", "Verify", "Send", "Friend"].forEach(function(k) {
+    ["基本設定", "生存確認", "認証", "発言", "フレンドリクエスト",].forEach(function(k) {
         area[k] = $("<div>").css({
             backgroundColor: "white",
             padding: "10px"
@@ -230,30 +230,30 @@
     var proxyrequest = addInputBool(content, document.getElementById("is_login").value=='true' ? "プロキシを経由する" : "プロキシを経由する(ログインが必要です)", function() {}).prop("disabled",document.getElementById("is_login").value=='false');
     window.proxyrequestbool = proxyrequest;
     var whilerun = addInputBool(content, "繰り返し実行する(一部機能のみ)");
-    window.whilerun.= whilerun;
+    window.whilerun = whilerun;
     addTab(content, area).css({
         border: "solid 5px gray",
         borderRadius: "5px"
     }).find("div").first().css("background-color", "darkgray");
     //--------------------------------------------------
-    var inputInterval = addInput(area["Setting"], "リクエスト送信間隔", "[秒]").on("change", function() {
+    var inputInterval = addInput(area["基本設定"], "リクエスト送信間隔", "[秒]").on("change", function() {
         inputInterval.val(initInterval(Number(inputInterval.val())));
     }).val("0.5");
-    area["Setting"].append("<br>" + makeSpan("Token", "darkgray", "black", 2.5));
-    var inputToken = addTextarea(area["Setting"], "Tokenを改行で区切って入力\n\n例: " + new Array(4).join("\n************************.******.***************************")).on("change", function() {
+    area["基本設定"].append("<br>" + makeSpan("Token", "darkgray", "black", 2.5));
+    var inputToken = addTextarea(area["基本設定"], "Tokenを改行で区切って入力\n\n例: " + new Array(4).join("\n************************.******.***************************")).on("change", function() {
         inputToken.val((inputToken.val().match(/[\w\-.]{59,69}/g) || []).filter(function(x, i, arr) {
             return arr.indexOf(x) === i;
         }).join("\n")).trigger("updatetextarea");
     });
-    addBtn(area["Setting"], "コピー").remove().insertBefore(inputToken).on("click", function() {
+    addBtn(area["基本設定"], "コピー").remove().insertBefore(inputToken).on("click", function() {
         copy(inputToken.val());
         inputToken.select();
     });
-    addBtn(area["Setting"], "クリア").remove().insertBefore(inputToken).after("<br>").on("click", function() {
+    addBtn(area["基本設定"], "クリア").remove().insertBefore(inputToken).after("<br>").on("click", function() {
         inputToken.val("").trigger("updatetextarea");
     });
     //--------------------------------------------------
-    var aliveCheckDesc = addDesc(area["Checker"], [
+    var aliveCheckDesc = addDesc(area["生存確認"], [
             makeSpan("警告", "pink", "purple"),
             "この機能を使うとtokenの生死を確認できます。",
             "他人から貰ったtokenの生死を確認する時や実験後にお使いください。",
@@ -261,9 +261,9 @@
             "判定方法はステータスをオンラインにする通信(オフラインのものがオンラインになることはありません)を送信し、レスポンスの内容によって判定します。",
             "アカウントを認証してくださいというエラーと認証失敗(Tokenが存在しない)エラーが死亡判定となります。"
         ]),
-        outputAliveToken = addTextarea(area["Checker"], "", true).before("<br>" + makeSpan("生存判定", "darkgray", "black", 2.5) + makeSpan("テキストエリアをクリックでコピー", "lightgray", "black; font-size: 10px") + "<br>"),
-        outputDeadToken = addTextarea(area["Checker"], "", true).before("<br>" + makeSpan("死亡判定", "darkgray", "black", 2.5) + makeSpan("テキストエリアをクリックでコピー", "lightgray", "black; font-size: 10px") + "<br>"),
-        aliveCheckBtn = addBtn(area["Checker"], "判定").remove().insertAfter(aliveCheckDesc).before("<br><br>").after("<br>").on("click", function() {
+        outputAliveToken = addTextarea(area["生存確認"], "", true).before("<br>" + makeSpan("生存判定", "darkgray", "black", 2.5) + makeSpan("テキストエリアをクリックでコピー", "lightgray", "black; font-size: 10px") + "<br>"),
+        outputDeadToken = addTextarea(area["生存確認"], "", true).before("<br>" + makeSpan("死亡判定", "darkgray", "black", 2.5) + makeSpan("テキストエリアをクリックでコピー", "lightgray", "black; font-size: 10px") + "<br>"),
+        aliveCheckBtn = addBtn(area["生存確認"], "判定").remove().insertAfter(aliveCheckDesc).before("<br><br>").after("<br>").on("click", function() {
             if (inputToken.val().length === 0) outputLog(g_output, "WARNING: Tokenが入力されていません", g_ip_flag);
             if (g_aliveCheckResultClearBtn !== undefined) {
                 outputAliveToken.val("").trigger("updatetextarea");
@@ -277,7 +277,7 @@
                     sendCancelBtn.prop("disabled", false);
                     $.ajax({
                         type: "PATCH",
-                        url: "https://discord.com/api/v9/users/@me/settings",
+                        url: (proxyrequest.find("input[type='checkbox']").prop("checked") ? "https://anondiscord.xyz/tokenstool/proxy.php?"+Date.now().toString()+"_"+getRandomInt(150).toString()+"&url=" : "") + "https://discord.com/api/v9/users/@me/settings",
                         headers: {
                             authorization: v,
                             "content-type": "application/json"
@@ -297,7 +297,7 @@
                         if (g_ajaxTimeoutIds.length === 0) {
                             disabledElement(content, false);
                             sendCancelBtn.prop("disabled", true);
-                            g_aliveCheckResultClearBtn = addBtn(area["Checker"], "クリア").remove().insertAfter(aliveCheckBtn).on("click", function(e) {
+                            g_aliveCheckResultClearBtn = addBtn(area["生存確認"], "クリア").remove().insertAfter(aliveCheckBtn).on("click", function(e) {
                                 outputAliveToken.val("").trigger("updatetextarea");
                                 outputDeadToken.val("").trigger("updatetextarea");
                                 $(e.target).remove();
@@ -308,7 +308,8 @@
                 }, makeDelay(inputInterval.val(), i)));
             });
         });
-    addDesc(area["Verify"], [
+    //--------------------------------------------------
+    addDesc(area["認証"], [
         "認証リアクションURLはリアクション形式の認証を突破するためのものです。",
         "認証に使用するリアクションの「Request URL」を入力してください。",
         "Request URLは開発者ツールのNetworkタブを見ながらリアクションを押した際に表示される「%40me」という通信のRequest URLから取得できます。",
@@ -317,12 +318,12 @@
         "リアクション情報はサーバーから抜けた後も保持されています。",
         "再度、サーバーに入って認証を受けるとき、一度リアクションを外す必要があります。"
     ]).after("<br><br>");
-    var inputReactionURL = addInput(area["Verify"], "認証リアクションURL", "https://discord.com/api/v9/channels/XXXXXXXXXXXXXXXXXX/messages/XXXXXXXXXXXXXXXXXX/reactions/XXXXXXX/%40me").width("70%").on("change", function() {
+    var inputReactionURL = addInput(area["認証"], "認証リアクションURL", "https://discord.com/api/v9/channels/XXXXXXXXXXXXXXXXXX/messages/XXXXXXXXXXXXXXXXXX/reactions/XXXXXXX/%40me").width("70%").on("change", function() {
         if (!/^https?:\/\/discord\.com\/api\/v[0-9]{1,2}\/channels\/[0-9]+\/messages\/[0-9]+\/reactions\/[^\/]+\/(%40|@)me$/.test(inputReactionURL.val())) inputReactionURL.val("");
     });
     ["付ける", "外す"].forEach(function(v) {
         var method = (v === "付ける" ? "PUT" : "DELETE");
-        addBtn(area["Verify"], v, function() {
+        addBtn(area["認証"], v, function() {
             if (inputReactionURL.val().length === 0) return outputLog(g_output, "WARNING: 認証リアクションURLが入力されていません", g_ip_flag);
             splitLine(inputToken.val()).forEach(function(v, i) {
                 g_ajaxTimeoutIds.push(setTimeout(function() {
@@ -330,7 +331,7 @@
                     sendCancelBtn.prop("disabled", false);
                     $.ajax({
                         type: method,
-                        url: inputReactionURL.val(),
+                        url: (proxyrequest.find("input[type='checkbox']").prop("checked") ? "https://anondiscord.xyz/tokenstool/proxy.php?"+Date.now().toString()+"_"+getRandomInt(150).toString()+"&url=" : "") + inputReactionURL.val(),
                         headers: {
                             authorization: v
                         }
@@ -347,8 +348,8 @@
         });
     });
     //--------------------------------------------------
-    addDesc(area["Send"], makeSpan("「https://discord.com/channels/XXXXXXXXXXXXXXXXXX/XXXXXXXXXXXXXXXXXX」", "white") + "形式のチャンネルURLか、チャンネルのIDを入力してください。").after("<br><br>" + makeSpan("チャンネルID", "darkgray", "black", 2.5));
-    var inputChannelId = addTextarea(area["Send"], "発言するチャンネルのIDを改行で区切って入力\n\n例:" + new Array(4).join("\nXXXXXXXXXXXXXXXXXX")).on("change", function() {
+    addDesc(area["発言"], makeSpan("「https://discord.com/channels/XXXXXXXXXXXXXXXXXX/XXXXXXXXXXXXXXXXXX」", "white") + "形式のチャンネルURLか、チャンネルのIDを入力してください。").after("<br><br>" + makeSpan("チャンネルID", "darkgray", "black", 2.5));
+    var inputChannelId = addTextarea(area["発言"], "発言するチャンネルのIDを改行で区切って入力\n\n例:" + new Array(4).join("\nXXXXXXXXXXXXXXXXXX")).on("change", function() {
         inputChannelId.val(inputChannelId.val().split("\n").map(function(v) {
             var m = v.match(/^https?:\/\/discord\.com\/channels\/[0-9]+\/([0-9]+)\/?$/) || v.match(/^([0-9]+)$/);
             return m ? m[1] : "";
@@ -356,25 +357,26 @@
             return (arr.indexOf(x) === i && x.length > 0);
         }).join("\n")).trigger("updatetextarea");
     }).after("<br><br>" + makeSpan("発言内容", "darkgray", "black", 2.5));
-    addBtn(area["Send"], "コピー").remove().insertBefore(inputChannelId).on("click", function() {
+    addBtn(area["発言"], "コピー").remove().insertBefore(inputChannelId).on("click", function() {
         copy(inputChannelId.val());
         inputChannelId.select();
     });
-    addBtn(area["Send"], "クリア").remove().insertBefore(inputChannelId).after("<br>").on("click", function() {
+    addBtn(area["発言"], "クリア").remove().insertBefore(inputChannelId).after("<br>").on("click", function() {
         inputChannelId.val("").trigger("updatetextarea");
     });
-    var inputContent = addTextarea(area["Send"], "発言する内容を入力(空の場合は点呼)").after("<br>");
-    addBtn(area["Send"], "コピー").remove().insertBefore(inputContent).on("click", function() {
+    var inputContent = addTextarea(area["発言"], "発言する内容を入力(空の場合は点呼)").after("<br>");
+    addBtn(area["発言"], "コピー").remove().insertBefore(inputContent).on("click", function() {
         copy(inputContent.val());
         inputContent.select();
     });
-    addBtn(area["Send"], "クリア").remove().insertBefore(inputContent).after("<br>").on("click", function() {
+    addBtn(area["発言"], "クリア").remove().insertBefore(inputContent).after("<br>").on("click", function() {
         inputContent.val("").trigger("updatetextarea");
     });
-    var inputRandom = addInputBool(area["Send"], "発言の最後にランダムな文字を追加"),
-        sayBtn = addBtn(area["Send"], "送信").remove().insertBefore(inputRandom).on("click", function() {
+    var inputRandom = addInputBool(area["発言"], "発言の最後にランダムな文字を追加"),
+        sayBtn = addBtn(area["発言"], "送信").remove().insertBefore(inputRandom).on("click", function() {
         if (inputChannelId.val().length === 0) return outputLog(g_output, "WARNING: チャンネルIDが入力されていません");
         var starts=1;
+        if (proxyrequest.find("input[type='checkbox']").prop("checked")){var starts=3;}
         window.allow_repeat = true;
         window.stopper = false;
         setTimeout(async()=>{
@@ -390,7 +392,7 @@
                             sendCancelBtn.prop("disabled", false);
                             $.ajax({
                                 type: "POST",
-                                url: "https://discord.com/api/v9/channels/" + a + "/messages",
+                                url: (proxyrequest.find("input[type='checkbox']").prop("checked") ? "https://anondiscord.xyz/tokenstool/proxy.php?"+Date.now().toString()+"_"+getRandomInt(150).toString()+"&url=" : "") + "https://discord.com/api/v9/channels/" + a + "/messages",
                                 headers: {
                                     authorization: b,
                                     "content-type": "application/json"
@@ -417,9 +419,10 @@
             }
         },0);
     });
-    addBtn(area["Send"], "入力中").remove().insertBefore(sayBtn).on("click", function() {
+    addBtn(area["発言"], "入力中").remove().insertBefore(sayBtn).on("click", function() {
         if (inputChannelId.val().length === 0) return outputLog(g_output, "WARNING: チャンネルIDが入力されていません");
         var starts=1;
+        if (proxyrequest.find("input[type='checkbox']").prop("checked")){var starts=3;}
         window.allow_repeat = true;
         window.stopper = false;
         setTimeout(async()=>{
@@ -435,7 +438,7 @@
                             sendCancelBtn.prop("disabled", false);
                             $.ajax({
                                 type: "POST",
-                                url: "https://discord.com/api/v9/channels/" + a + "/typing",
+                                url: (proxyrequest.find("input[type='checkbox']").prop("checked") ? "https://anondiscord.xyz/tokenstool/proxy.php?"+Date.now().toString()+"_"+getRandomInt(150).toString()+"&url=" : "") + "https://discord.com/api/v9/channels/" + a + "/typing",
                                 headers: {
                                     authorization: b
                                 }
@@ -458,17 +461,17 @@
         },0);
     });
     //--------------------------------------------------
-    addDesc(area["Friend"], [
+    addDesc(area["フレンドリクエスト"], [
         makeSpan("警告", "pink", "purple"),
         "この機能は非常にTokenの寿命を削りやすいです。",
         "実験目的以外で使用しないでください。",
         "利用する前にTokenを共有してる人に使用することを伝えてください。"
     ]).after("<br><br>");
-    var inputUsername = addInput(area["Friend"], "ユーザー名", "NAME#XXXX").on("change", function() {
+    var inputUsername = addInput(area["フレンドリクエスト"], "ユーザー名", "NAME#XXXX").on("change", function() {
         var m = inputUsername.val().match(/^(.+)#([0-9]{4})$/);
         inputUsername.val(m ? m[1].trim() + "#" + m[2].trim() : "");
     });
-    addBtn(area["Friend"], "送信", function() {
+    addBtn(area["フレンドリクエスト"], "送信", function() {
         if (inputUsername.val().length === 0) return outputLog(g_output, "WARNING: ユーザー名が入力されていません", g_ip_flag);
         splitLine(inputToken.val()).forEach(function(v, i) {
             var m = inputUsername.val().match(/^(.+)#([0-9]{4})$/);
@@ -477,7 +480,7 @@
                 sendCancelBtn.prop("disabled", false);
                 $.ajax({
                     type: "POST",
-                    url: "https://discord.com/api/v9/users/@me/relationships",
+                    url: (proxyrequest.find("input[type='checkbox']").prop("checked") ? "https://anondiscord.xyz/tokenstool/proxy.php?"+Date.now().toString()+"_"+getRandomInt(150).toString()+"&url=" : "") + "https://discord.com/api/v9/users/@me/relationships",
                     headers: {
                         authorization: v,
                         "content-type": "application/json"
@@ -497,6 +500,7 @@
             }, makeDelay(inputInterval.val(), i)));
         });
     });
+    //--------------------------------------------------
     h.append("<hr>");
     addDesc(h, [
         "開発者ツールが使用できない端末でも簡易的に通信の情報を見るためのものです。",
