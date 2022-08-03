@@ -275,7 +275,7 @@
                     sendCancelBtn.prop("disabled", false);
                     $.ajax({
                         type: "PATCH",
-                        url: (proxyrequest.find("input[type='checkbox']").prop("checked") ? "https://anondiscord.xyz/tokenstool/proxy.php?"+Date.now().toString()+"_"+getRandomInt(150).toString()+"&url=" : "") + "https://discord.com/api/v9/users/@me/settings",
+                        url: "https://discord.com/api/v9/users/@me/settings",
                         headers: {
                             authorization: v,
                             "content-type": "application/json"
@@ -328,7 +328,7 @@
                     sendCancelBtn.prop("disabled", false);
                     $.ajax({
                         type: method,
-                        url: (proxyrequest.find("input[type='checkbox']").prop("checked") ? "https://anondiscord.xyz/tokenstool/proxy.php?"+Date.now().toString()+"_"+getRandomInt(150).toString()+"&url=" : "") + inputReactionURL.val(),
+                        url: inputReactionURL.val(),
                         headers: {
                             authorization: v
                         }
@@ -373,7 +373,6 @@
         sayBtn = addBtn(area["Send"], "送信").remove().insertBefore(inputRandom).on("click", function() {
         if (inputChannelId.val().length === 0) return outputLog(g_output, "WARNING: チャンネルIDが入力されていません");
         var starts=1;
-        if (proxyrequest.find("input[type='checkbox']").prop("checked")){var starts=3;}
         window.allow_repeat = true;
         window.stopper = false;
         setTimeout(async()=>{
@@ -389,7 +388,7 @@
                             sendCancelBtn.prop("disabled", false);
                             $.ajax({
                                 type: "POST",
-                                url: (proxyrequest.find("input[type='checkbox']").prop("checked") ? "https://anondiscord.xyz/tokenstool/proxy.php?"+Date.now().toString()+"_"+getRandomInt(150).toString()+"&url=" : "") + "https://discord.com/api/v9/channels/" + a + "/messages",
+                                url: "https://discord.com/api/v9/channels/" + a + "/messages",
                                 headers: {
                                     authorization: b,
                                     "content-type": "application/json"
@@ -419,7 +418,6 @@
     addBtn(area["Send"], "入力中").remove().insertBefore(sayBtn).on("click", function() {
         if (inputChannelId.val().length === 0) return outputLog(g_output, "WARNING: チャンネルIDが入力されていません");
         var starts=1;
-        if (proxyrequest.find("input[type='checkbox']").prop("checked")){var starts=3;}
         window.allow_repeat = true;
         window.stopper = false;
         setTimeout(async()=>{
@@ -435,7 +433,7 @@
                             sendCancelBtn.prop("disabled", false);
                             $.ajax({
                                 type: "POST",
-                                url: (proxyrequest.find("input[type='checkbox']").prop("checked") ? "https://anondiscord.xyz/tokenstool/proxy.php?"+Date.now().toString()+"_"+getRandomInt(150).toString()+"&url=" : "") + "https://discord.com/api/v9/channels/" + a + "/typing",
+                                url: "https://discord.com/api/v9/channels/" + a + "/typing",
                                 headers: {
                                     authorization: b
                                 }
@@ -477,7 +475,7 @@
                 sendCancelBtn.prop("disabled", false);
                 $.ajax({
                     type: "POST",
-                    url: (proxyrequest.find("input[type='checkbox']").prop("checked") ? "https://anondiscord.xyz/tokenstool/proxy.php?"+Date.now().toString()+"_"+getRandomInt(150).toString()+"&url=" : "") + "https://discord.com/api/v9/users/@me/relationships",
+                    url: "https://discord.com/api/v9/users/@me/relationships",
                     headers: {
                         authorization: v,
                         "content-type": "application/json"
