@@ -239,17 +239,17 @@
     var inputInterval = addInput(area["Setting"], "リクエスト送信間隔", "[秒]").on("change", function() {
         inputInterval.val(initInterval(Number(inputInterval.val())));
     }).val("0.5");
-    area["基本設定"].append("<br>" + makeSpan("Token", "darkgray", "black", 2.5));
-    var inputToken = addTextarea(area["基本設定"], "Tokenを改行で区切って入力\n\n例: " + new Array(4).join("\n************************.******.***************************")).on("change", function() {
+    area["Setting"].append("<br>" + makeSpan("Token", "darkgray", "black", 2.5));
+    var inputToken = addTextarea(area["Setting"], "Tokenを改行で区切って入力\n\n例: " + new Array(4).join("\n************************.******.***************************")).on("change", function() {
         inputToken.val((inputToken.val().match(/[\w\-.]{59,69}/g) || []).filter(function(x, i, arr) {
             return arr.indexOf(x) === i;
         }).join("\n")).trigger("updatetextarea");
     });
-    addBtn(area["基本設定"], "コピー").remove().insertBefore(inputToken).on("click", function() {
+    addBtn(area["Setting"], "コピー").remove().insertBefore(inputToken).on("click", function() {
         copy(inputToken.val());
         inputToken.select();
     });
-    addBtn(area["基本設定"], "クリア").remove().insertBefore(inputToken).after("<br>").on("click", function() {
+    addBtn(area["Setting"], "クリア").remove().insertBefore(inputToken).after("<br>").on("click", function() {
         inputToken.val("").trigger("updatetextarea");
     });
     //--------------------------------------------------
@@ -261,9 +261,9 @@
             "判定方法はステータスをオンラインにする通信(オフラインのものがオンラインになることはありません)を送信し、レスポンスの内容によって判定します。",
             "アカウントを認証してくださいというエラーと認証失敗(Tokenが存在しない)エラーが死亡判定となります。"
         ]),
-        outputAliveToken = addTextarea(area["生存確認"], "", true).before("<br>" + makeSpan("生存判定", "darkgray", "black", 2.5) + makeSpan("テキストエリアをクリックでコピー", "lightgray", "black; font-size: 10px") + "<br>"),
-        outputDeadToken = addTextarea(area["生存確認"], "", true).before("<br>" + makeSpan("死亡判定", "darkgray", "black", 2.5) + makeSpan("テキストエリアをクリックでコピー", "lightgray", "black; font-size: 10px") + "<br>"),
-        aliveCheckBtn = addBtn(area["生存確認"], "判定").remove().insertAfter(aliveCheckDesc).before("<br><br>").after("<br>").on("click", function() {
+        outputAliveToken = addTextarea(area["Checker"], "", true).before("<br>" + makeSpan("生存判定", "darkgray", "black", 2.5) + makeSpan("テキストエリアをクリックでコピー", "lightgray", "black; font-size: 10px") + "<br>"),
+        outputDeadToken = addTextarea(area["Checker"], "", true).before("<br>" + makeSpan("死亡判定", "darkgray", "black", 2.5) + makeSpan("テキストエリアをクリックでコピー", "lightgray", "black; font-size: 10px") + "<br>"),
+        aliveCheckBtn = addBtn(area["Checker"], "判定").remove().insertAfter(aliveCheckDesc).before("<br><br>").after("<br>").on("click", function() {
             if (inputToken.val().length === 0) outputLog(g_output, "WARNING: Tokenが入力されていません", g_ip_flag);
             if (g_aliveCheckResultClearBtn !== undefined) {
                 outputAliveToken.val("").trigger("updatetextarea");
@@ -297,7 +297,7 @@
                         if (g_ajaxTimeoutIds.length === 0) {
                             disabledElement(content, false);
                             sendCancelBtn.prop("disabled", true);
-                            g_aliveCheckResultClearBtn = addBtn(area["生存確認"], "クリア").remove().insertAfter(aliveCheckBtn).on("click", function(e) {
+                            g_aliveCheckResultClearBtn = addBtn(area["Checker"], "クリア").remove().insertAfter(aliveCheckBtn).on("click", function(e) {
                                 outputAliveToken.val("").trigger("updatetextarea");
                                 outputDeadToken.val("").trigger("updatetextarea");
                                 $(e.target).remove();
@@ -317,7 +317,7 @@
         "リアクション情報はサーバーから抜けた後も保持されています。",
         "再度、サーバーに入って認証を受けるとき、一度リアクションを外す必要があります。"
     ]).after("<br><br>");
-    var inputReactionURL = addInput(area["認証"], "認証リアクションURL", "https://discord.com/api/v9/channels/XXXXXXXXXXXXXXXXXX/messages/XXXXXXXXXXXXXXXXXX/reactions/XXXXXXX/%40me").width("70%").on("change", function() {
+    var inputReactionURL = addInput(area["Verify"], "認証リアクションURL", "https://discord.com/api/v9/channels/XXXXXXXXXXXXXXXXXX/messages/XXXXXXXXXXXXXXXXXX/reactions/XXXXXXX/%40me").width("70%").on("change", function() {
         if (!/^https?:\/\/discord\.com\/api\/v[0-9]{1,2}\/channels\/[0-9]+\/messages\/[0-9]+\/reactions\/[^\/]+\/(%40|@)me$/.test(inputReactionURL.val())) inputReactionURL.val("");
     });
     ["付ける", "外す"].forEach(function(v) {
@@ -348,7 +348,7 @@
     });
     //--------------------------------------------------
     addDesc(area["Send"], makeSpan("「https://discord.com/channels/XXXXXXXXXXXXXXXXXX/XXXXXXXXXXXXXXXXXX」", "white") + "形式のチャンネルURLか、チャンネルのIDを入力してください。").after("<br><br>" + makeSpan("チャンネルID", "darkgray", "black", 2.5));
-    var inputChannelId = addTextarea(area["発言"], "発言するチャンネルのIDを改行で区切って入力\n\n例:" + new Array(4).join("\nXXXXXXXXXXXXXXXXXX")).on("change", function() {
+    var inputChannelId = addTextarea(area["Send"], "発言するチャンネルのIDを改行で区切って入力\n\n例:" + new Array(4).join("\nXXXXXXXXXXXXXXXXXX")).on("change", function() {
         inputChannelId.val(inputChannelId.val().split("\n").map(function(v) {
             var m = v.match(/^https?:\/\/discord\.com\/channels\/[0-9]+\/([0-9]+)\/?$/) || v.match(/^([0-9]+)$/);
             return m ? m[1] : "";
